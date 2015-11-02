@@ -1,35 +1,15 @@
 package fr.lteconsulting.pomexplorer;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import fr.lteconsulting.pomexplorer.GAV;
-import fr.lteconsulting.pomexplorer.Tools;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Unit test for simple App.
  */
-public class AppTest 
-    extends TestCase
+public class AppTest
 {
-    /**
-     * Create the test case
-     *
-     * @param testName name of the test case
-     */
-    public AppTest( String testName )
-    {
-        super( testName );
-    }
-
-    /**
-     * @return the suite of tests being tested
-     */
-    public static Test suite()
-    {
-        return new TestSuite( AppTest.class );
-    }
-
+    @Test
 	public void testOpenVersions()
 	{
 		checkOpenVersion("15.6.0", "16.6.0-SNAPSHOT");
@@ -40,7 +20,7 @@ public class AppTest
 
 	private void checkOpenVersion(String closed, String opened)
 	{
-		GAV newGav = Tools.openGavVersion(new GAV("group", "artifact", closed));
+		final GAV newGav = Tools.openGavVersion(new GAV("group", "artifact", closed));
 		assertEquals(opened, newGav.getVersion());
 	}
 }

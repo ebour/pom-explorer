@@ -14,6 +14,7 @@ import fr.lteconsulting.pomexplorer.graph.relation.GAVRelation;
 import fr.lteconsulting.pomexplorer.graph.relation.Relation;
 import fr.lteconsulting.pomexplorer.graph.relation.Relation.RelationType;
 
+@Command
 public class DependsCommand
 {
 	@Help( "lists the GAVs directly depending on the one given in parameter" )

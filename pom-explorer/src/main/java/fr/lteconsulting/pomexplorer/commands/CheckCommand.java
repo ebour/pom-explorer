@@ -16,6 +16,7 @@ import fr.lteconsulting.pomexplorer.Project;
 import fr.lteconsulting.pomexplorer.Tools;
 import fr.lteconsulting.pomexplorer.WorkingSession;
 
+@Command
 public class CheckCommand
 {
 	@Help( "checks some commons points of errors, at least of attention..." )

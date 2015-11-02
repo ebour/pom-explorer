@@ -10,6 +10,7 @@ import fr.lteconsulting.pomexplorer.changes.ChangeSetManager;
 import fr.lteconsulting.pomexplorer.changes.GavChange;
 import fr.lteconsulting.pomexplorer.depanalyze.GavLocation;
 
+@Command
 public class ChangeCommand
 {
 	@Help( "changes the GAV version and also in dependent projects. Parameters : gav, newVersion" )

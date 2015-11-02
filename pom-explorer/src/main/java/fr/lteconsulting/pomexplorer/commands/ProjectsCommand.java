@@ -22,6 +22,7 @@ import fr.lteconsulting.pomexplorer.WorkingSession;
 import fr.lteconsulting.pomexplorer.graph.relation.GAVRelation;
 import fr.lteconsulting.pomexplorer.graph.relation.Relation;
 
+@Command
 public class ProjectsCommand
 {
 	@Help( "list the session's projects" )

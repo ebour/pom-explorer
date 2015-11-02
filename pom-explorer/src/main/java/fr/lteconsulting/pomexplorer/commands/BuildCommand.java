@@ -14,6 +14,7 @@ import fr.lteconsulting.pomexplorer.WorkingSession;
 import fr.lteconsulting.pomexplorer.graph.relation.DependencyRelation;
 import fr.lteconsulting.pomexplorer.graph.relation.GAVRelation;
 
+@Command
 public class BuildCommand
 {
 	@Help( "clear the build list. any currently building process will finish and no other will be started" )
@@ -50,7 +51,7 @@ public class BuildCommand
 		log.html( "Adding project " + project + " to list of maintained projects, and watching dependencies...<br/>" );
 
 		session.maintainedProjects().add( project );
-		log.html( "Project " + project + " added to the list of maintained projects<br/>" );
+		log.html("Project " + project + " added to the list of maintained projects<br/>");
 
 		log.html( "detecting dependencies to be watched...<br/>" );
 

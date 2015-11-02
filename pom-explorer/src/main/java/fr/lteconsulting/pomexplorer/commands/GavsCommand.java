@@ -6,6 +6,7 @@ import fr.lteconsulting.pomexplorer.ILogger;
 import fr.lteconsulting.pomexplorer.PomAnalyzer;
 import fr.lteconsulting.pomexplorer.WorkingSession;
 
+@Command
 public class GavsCommand
 {
 	@Help( "list the session's GAVs" )

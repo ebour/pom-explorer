@@ -11,6 +11,7 @@ import fr.lteconsulting.pomexplorer.ILogger;
 import fr.lteconsulting.pomexplorer.WorkingSession;
 import fr.lteconsulting.pomexplorer.graph.relation.Relation;
 
+@Command
 public class StatsCommand
 {
 	@Help( "general statistics on the session" )

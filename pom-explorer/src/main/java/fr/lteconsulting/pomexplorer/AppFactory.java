@@ -5,31 +5,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import fr.lteconsulting.pomexplorer.commands.*;
 import org.jgrapht.DirectedGraph;
 
 import com.google.gson.Gson;
 
-import fr.lteconsulting.pomexplorer.commands.AnalyzeCommand;
-import fr.lteconsulting.pomexplorer.commands.BuildCommand;
-import fr.lteconsulting.pomexplorer.commands.ChangeCommand;
-import fr.lteconsulting.pomexplorer.commands.CheckCommand;
-import fr.lteconsulting.pomexplorer.commands.ClassesCommand;
-import fr.lteconsulting.pomexplorer.commands.Commands;
-import fr.lteconsulting.pomexplorer.commands.DependsCommand;
-import fr.lteconsulting.pomexplorer.commands.GarbageCommand;
-import fr.lteconsulting.pomexplorer.commands.GavsCommand;
-import fr.lteconsulting.pomexplorer.commands.GitCommand;
-import fr.lteconsulting.pomexplorer.commands.GraphCommand;
-import fr.lteconsulting.pomexplorer.commands.HelpCommand;
-import fr.lteconsulting.pomexplorer.commands.ProjectsCommand;
-import fr.lteconsulting.pomexplorer.commands.ReleaseCommand;
-import fr.lteconsulting.pomexplorer.commands.SessionCommand;
-import fr.lteconsulting.pomexplorer.commands.StatsCommand;
 import fr.lteconsulting.pomexplorer.graph.relation.Relation;
 import fr.lteconsulting.pomexplorer.webserver.Message;
 import fr.lteconsulting.pomexplorer.webserver.MessageFactory;
 import fr.lteconsulting.pomexplorer.webserver.WebServer;
 import fr.lteconsulting.pomexplorer.webserver.XWebServer;
+import org.reflections.Reflections;
+import sun.reflect.Reflection;
 
 public class AppFactory
 {
@@ -57,28 +44,22 @@ public class AppFactory
 		return sessions;
 	}
 
-	public Commands commands()
-	{
+	public Commands commands() {
 		if( commands == null )
 		{
 			commands = new Commands();
 
-			// shell commands available
-			commands.addCommand( new HelpCommand() );
-			commands.addCommand( new SessionCommand() );
-			commands.addCommand( new AnalyzeCommand() );
-			commands.addCommand( new StatsCommand() );
-			commands.addCommand( new GavsCommand() );
-			commands.addCommand( new ProjectsCommand() );
-			commands.addCommand( new DependsCommand() );
-			commands.addCommand( new ReleaseCommand() );
-			commands.addCommand( new ChangeCommand() );
-			commands.addCommand( new BuildCommand() );
-			commands.addCommand( new GraphCommand() );
-			commands.addCommand( new CheckCommand() );
-			commands.addCommand( new ClassesCommand() );
-			commands.addCommand( new GitCommand() );
-			commands.addCommand( new GarbageCommand() );
+			final Reflections reflections = new Reflections();
+			final Set<Class<?>> commandClasses = reflections.getTypesAnnotatedWith(Command.class);
+
+			for(Class commandClass : commandClasses)
+			{
+				final Object commandClassInstance = newInstanceOf( commandClass );
+				if(commandClassInstance != null)
+				{
+					commands.addCommand( commandClassInstance );
+				}
+			}
 		}
 
 		return commands;
@@ -106,8 +87,7 @@ public class AppFactory
 	private XWebServer xWebServer = new XWebServer()
 	{
 		@Override
-		public void onNewClient( Client client )
-		{
+		public void onNewClient( Client client ) {
 			System.out.println( "New client " + client.getId() );
 
 			final String talkId = MessageFactory.newGuid();
@@ -127,7 +107,9 @@ public class AppFactory
 					client.sendHtml( talkId, message );
 				}
 				else
-					AppFactory.get().commands().takeCommand( client, createLogger( client, talkId ), command );
+				{
+					AppFactory.get().commands().takeCommand(client, createLogger(client, talkId), command);
+				}
 			}
 
 			client.sendClose( talkId );
@@ -286,6 +268,19 @@ public class AppFactory
 				return handle.answer;
 			}
 		};
+	}
+
+	private Object newInstanceOf(Class commandClass)
+	{
+		try
+		{
+			return commandClass.newInstance();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	static class EdgeDto

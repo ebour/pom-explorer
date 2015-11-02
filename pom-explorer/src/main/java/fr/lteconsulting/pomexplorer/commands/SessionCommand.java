@@ -8,6 +8,7 @@ import fr.lteconsulting.pomexplorer.ILogger;
 import fr.lteconsulting.pomexplorer.Tools;
 import fr.lteconsulting.pomexplorer.WorkingSession;
 
+@Command
 public class SessionCommand
 {
 	@Help( "tells about the current working session" )

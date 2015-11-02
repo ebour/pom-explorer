@@ -17,6 +17,7 @@ import fr.lteconsulting.pomexplorer.depanalyze.Location;
 import fr.lteconsulting.pomexplorer.graph.relation.GAVRelation;
 import fr.lteconsulting.pomexplorer.graph.relation.Relation;
 
+@Command
 public class ReleaseCommand
 {
 	@Help( "releases a gav, all dependencies are also released. GAVs depending on released GAVs are updated." )

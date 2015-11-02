@@ -232,6 +232,11 @@ public class Commands
 		}
 	}
 
+	public boolean hasNoCommands()
+	{
+		return commands.isEmpty();
+	}
+
 	public class CommandCallInfo
 	{
 		public final Object command;

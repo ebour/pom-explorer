@@ -4,6 +4,7 @@ import fr.lteconsulting.pomexplorer.AppFactory;
 import fr.lteconsulting.pomexplorer.Client;
 import fr.lteconsulting.pomexplorer.ILogger;
 
+@Command
 public class HelpCommand
 {
 	@Help( "gives this message" )

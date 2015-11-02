@@ -11,6 +11,7 @@ import fr.lteconsulting.pomexplorer.Tools;
 import fr.lteconsulting.pomexplorer.WorkingSession;
 import fr.lteconsulting.pomexplorer.javac.JavaSourceAnalyzer;
 
+@Command
 public class ClassesCommand
 {
 	@Help( "gives the java classes provided by the session's gavs" )

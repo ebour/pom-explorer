@@ -1,20 +1,17 @@
 package fr.lteconsulting.pomexplorer;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
 import fr.lteconsulting.pomexplorer.commands.Commands;
 import fr.lteconsulting.pomexplorer.commands.Commands.CommandCallInfo;
+import org.junit.Test;
 
-public class CommandsTest extends TestCase
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+public class CommandsTest
 {
-	public static Test suite()
-	{
-		return new TestSuite( CommandsTest.class );
-	}
-
+	@Test
 	public void testOne()
-	{
+    {
 		Commands cmd = AppFactory.get().commands();
 		ILogger log = new ILogger()
 		{
@@ -38,7 +35,7 @@ public class CommandsTest extends TestCase
 	private void assertCommand( CommandCallInfo info, String command, String method )
 	{
 		assertNotNull( info );
-		assertEquals( info.command.getClass().getSimpleName(), command );
+		assertEquals( info.command.getClass().getSimpleName(), command);
 		assertEquals( info.method.getName(), method );
 	}
 }

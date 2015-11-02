@@ -9,6 +9,7 @@ import fr.lteconsulting.pomexplorer.ILogger;
 import fr.lteconsulting.pomexplorer.Project;
 import fr.lteconsulting.pomexplorer.WorkingSession;
 
+@Command
 public class GitCommand
 {
 	@Help( "displays the list of git repos found" )

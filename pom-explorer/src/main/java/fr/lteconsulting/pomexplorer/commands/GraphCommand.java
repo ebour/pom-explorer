@@ -33,6 +33,7 @@ import fr.lteconsulting.pomexplorer.graph.relation.DependencyRelation;
 import fr.lteconsulting.pomexplorer.graph.relation.ParentRelation;
 import fr.lteconsulting.pomexplorer.graph.relation.Relation;
 
+@Command
 public class GraphCommand
 {
 	@Help( "displays an interactive 3d WebGL graph of the pom data" )

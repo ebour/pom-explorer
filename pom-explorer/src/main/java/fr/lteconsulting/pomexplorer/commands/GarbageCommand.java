@@ -15,6 +15,7 @@ import fr.lteconsulting.pomexplorer.WorkingSession;
 import fr.lteconsulting.pomexplorer.graph.relation.BuildDependencyRelation;
 import fr.lteconsulting.pomexplorer.javac.JavaSourceAnalyzer;
 
+@Command
 public class GarbageCommand
 {
 	@Help( "displays the list of dependencies declared but not used in the java code of a project and referenced transitive dependencies not declared in the pom file, arguments : gav_filter" )
