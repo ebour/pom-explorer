@@ -3,7 +3,6 @@ package fr.lteconsulting.pomexplorer.commands;
 import java.util.List;
 
 import fr.lteconsulting.pomexplorer.AppFactory;
-import fr.lteconsulting.pomexplorer.Client;
 import fr.lteconsulting.pomexplorer.ILogger;
 import fr.lteconsulting.pomexplorer.Tools;
 import fr.lteconsulting.pomexplorer.WorkingSession;
@@ -12,7 +11,7 @@ import fr.lteconsulting.pomexplorer.WorkingSession;
 public class SessionCommand
 {
 	@Help( "tells about the current working session" )
-	public void main( Client client, WorkingSession session, ILogger log )
+	public void main( WorkingSession session, ILogger log )
 	{
 		log.html( "You are working on session " + session.getDescription() + "<br/>" );
 	}
@@ -26,17 +25,17 @@ public class SessionCommand
 	}
 
 	@Help( "create and attach a new session" )
-	public void create( Client client, ILogger log )
+	public void create( ILogger log )
 	{
 		WorkingSession session = new WorkingSession();
 		session.configure( AppFactory.get().getSettings() );
 		AppFactory.get().sessions().add( session );
-		client.setCurrentSession( session );
+
 		log.html( "Session created and registered. It has been attached to your profile<br/>" );
 	}
 
 	@Help( "sets the path to the maven settings file" )
-	public void mavenSettingsFilePath( Client client, WorkingSession session, String path, ILogger log )
+	public void mavenSettingsFilePath( WorkingSession session, String path, ILogger log )
 	{
 		session.setMavenSettingsFilePath( path );
 
@@ -44,7 +43,7 @@ public class SessionCommand
 	}
 
 	@Help( "sets the maven shell command to execute maven" )
-	public void mavenShellCommand( Client client, WorkingSession session, String command, ILogger log )
+	public void mavenShellCommand( WorkingSession session, String command, ILogger log )
 	{
 		session.setMavenShellCommand( command );
 
@@ -52,11 +51,11 @@ public class SessionCommand
 	}
 
 	@Help( "sets the current working session to the specified index" )
-	public void workOn( Client client, WorkingSession session, Integer index, ILogger log )
+	public void workOn( WorkingSession session, Integer index, ILogger log )
 	{
 		if( index == null )
 		{
-			main( client, session, log );
+			main( session, log );
 			return;
 		}
 
@@ -66,8 +65,6 @@ public class SessionCommand
 			log.html( Tools.errorMessage( "The session " + index + " does not exist !" ) );
 			return;
 		}
-
-		client.setCurrentSession( sessions.get( index ) );
 
 		log.html( "Session " + index + " attached to your profile.<br/>" );
 	}

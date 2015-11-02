@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 import fr.lteconsulting.hexa.client.tools.Func1;
-import fr.lteconsulting.pomexplorer.Client;
 import fr.lteconsulting.pomexplorer.GAV;
 import fr.lteconsulting.pomexplorer.ILogger;
 import fr.lteconsulting.pomexplorer.Tools;
@@ -68,7 +67,7 @@ public class Commands
 
 				for( Class<?> pCls : m.getParameterTypes() )
 				{
-					if( pCls == Client.class || pCls == WorkingSession.class || pCls == CommandOptions.class || pCls == ILogger.class )
+					if( pCls == WorkingSession.class || pCls == CommandOptions.class || pCls == ILogger.class )
 						continue;
 
 					sb.append( " <b><i>" + pCls.getSimpleName() + "</i></b>" );
@@ -88,7 +87,7 @@ public class Commands
 	/**
 	 * Returns the error or null if success
 	 */
-	public void takeCommand( Client client, ILogger log, String text )
+	public void takeCommand( ILogger log, String text )
 	{
 		if( text == null || text.isEmpty() )
 		{
@@ -136,13 +135,7 @@ public class Commands
 	
 			if( curArg < argTypes.length )
 			{
-				if( argTypes[curArg] == Client.class )
-				{
-					args[curArg] = client;
-					curArg++;
-					continue;
-				}
-	
+
 				if( argTypes[curArg] == ILogger.class )
 				{
 					args[curArg] = log;
@@ -154,7 +147,7 @@ public class Commands
 				{
 					if( session == null )
 					{
-						session = client.getCurrentSession();
+						session = new WorkingSession();
 						if( session == null )
 						{
 							log.html( Tools.warningMessage( "you should have a session, type 'session create'." ) );
@@ -323,7 +316,7 @@ public class Commands
 		int c = 0;
 		for( Class<?> t : m.getParameterTypes() )
 		{
-			if( t != Client.class && t != WorkingSession.class && t != CommandOptions.class && t != ILogger.class )
+			if( t != WorkingSession.class && t != CommandOptions.class && t != ILogger.class )
 				c++;
 		}
 		return c;

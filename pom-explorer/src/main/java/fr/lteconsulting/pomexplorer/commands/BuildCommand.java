@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import fr.lteconsulting.pomexplorer.Client;
 import fr.lteconsulting.pomexplorer.GAV;
 import fr.lteconsulting.pomexplorer.ILogger;
 import fr.lteconsulting.pomexplorer.Project;
@@ -39,7 +38,7 @@ public class BuildCommand
 	}
 
 	@Help( "Adds a GAV to the list of maintained projects. A project needs to be found for that GAV." )
-	public void maintain( Client client, WorkingSession session, ILogger log, GAV gav )
+	public void maintain( WorkingSession session, ILogger log, GAV gav )
 	{
 		Project project = session.projects().forGav( gav );
 		if( project == null )

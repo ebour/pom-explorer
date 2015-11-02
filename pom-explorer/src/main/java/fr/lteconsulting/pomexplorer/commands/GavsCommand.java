@@ -1,6 +1,5 @@
 package fr.lteconsulting.pomexplorer.commands;
 
-import fr.lteconsulting.pomexplorer.Client;
 import fr.lteconsulting.pomexplorer.GAV;
 import fr.lteconsulting.pomexplorer.ILogger;
 import fr.lteconsulting.pomexplorer.PomAnalyzer;
@@ -32,23 +31,23 @@ public class GavsCommand
 	}
 
 	@Help( "analyze all the gav's dependencies and add them in the pom graph." )
-	public void add( WorkingSession session, ILogger log, Client client, GAV gav )
+	public void add( WorkingSession session, ILogger log, GAV gav )
 	{
 		PomAnalyzer analyzer = new PomAnalyzer();
 
-		analyzer.registerExternalDependency( session, client, log, gav );
+		analyzer.registerExternalDependency( session, log, gav );
 
 		log.html( "finished !<br/>" );
 	}
 
 	@Help( "analyze gavs which have no associated project" )
-	public void resolve( WorkingSession session, ILogger log, Client client )
+	public void resolve( WorkingSession session, ILogger log )
 	{
 		PomAnalyzer analyzer = new PomAnalyzer();
 
 		session.graph().gavs().stream().filter( gav -> session.projects().forGav( gav ) == null ).parallel().forEach( gav -> {
 			log.html( "analyzing " + gav + "...<br/>" );
-			analyzer.registerExternalDependency( session, client, log, gav );
+			analyzer.registerExternalDependency( session, log, gav );
 		} );
 
 		log.html( "finished !<br/>" );

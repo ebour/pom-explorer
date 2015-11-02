@@ -26,7 +26,7 @@ public class WorkingSession
 {
 	private String mavenSettingsFilePath = null;
 
-	private String mavenShellCommand = "C:\\Program Files (x86)\\apache-maven-3.1.1\\bin\\mvn.bat";
+	private String mavenShellCommand = "mvn";
 
 	private final GitRepositories gitRepositories = new GitRepositories();
 
@@ -36,16 +36,11 @@ public class WorkingSession
 
 	private final Set<Project> maintainedProjects = new HashSet<>();
 
-	private final Set<Client> clients = new HashSet<>();
-
 	private final ProjectsWatcher projectsWatcher = new ProjectsWatcher();
-
-	private final BuilderSuperman builder = new BuilderSuperman();
 
 	public WorkingSession()
 	{
-		builder.setSession( this );
-		builder.runAsync();
+
 	}
 
 	public void configure( ApplicationSettings settings )
@@ -75,7 +70,7 @@ public class WorkingSession
 
 	public void cleanBuildList()
 	{
-		builder.clearJobs();
+
 	}
 
 	public String getMavenSettingsFilePath()
@@ -102,21 +97,6 @@ public class WorkingSession
 	{
 		return "<div><b>WorkingSession " + System.identityHashCode( this ) + "</b><br/>" + "Maven configuration file : " + (mavenSettingsFilePath != null ? mavenSettingsFilePath : "(system default)") + "<br/>" + "Maven shell command : "
 				+ (mavenShellCommand != null ? mavenShellCommand : "(null)") + "<br/>" + projects.size() + " projects<br/>" + graph.gavs().size() + " GAVs<br/>" + graph.relations().size() + " relations<br/></div>";
-	}
-
-	public void addClient( Client client )
-	{
-		clients.add( client );
-	}
-
-	public void removeClient( Client client )
-	{
-		clients.remove( client );
-	}
-
-	public Set<Client> getClients()
-	{
-		return clients;
 	}
 
 	public ProjectsWatcher projectsWatcher()

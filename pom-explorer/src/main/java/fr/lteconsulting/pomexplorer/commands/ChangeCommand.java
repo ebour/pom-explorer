@@ -1,6 +1,5 @@
 package fr.lteconsulting.pomexplorer.commands;
 
-import fr.lteconsulting.pomexplorer.Client;
 import fr.lteconsulting.pomexplorer.GAV;
 import fr.lteconsulting.pomexplorer.ILogger;
 import fr.lteconsulting.pomexplorer.PomSection;
@@ -14,7 +13,7 @@ import fr.lteconsulting.pomexplorer.depanalyze.GavLocation;
 public class ChangeCommand
 {
 	@Help( "changes the GAV version and also in dependent projects. Parameters : gav, newVersion" )
-	public static void gav( CommandOptions options, Client client, WorkingSession session, ILogger log, GAV originalGav, GAV newGav )
+	public static void gav( CommandOptions options, WorkingSession session, ILogger log, GAV originalGav, GAV newGav )
 	{
 		log.html( "<b>Changing</b> " + originalGav + " to " + newGav + "<br/><br/>" );
 

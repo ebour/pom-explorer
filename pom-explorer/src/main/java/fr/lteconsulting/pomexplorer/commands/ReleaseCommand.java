@@ -2,7 +2,6 @@ package fr.lteconsulting.pomexplorer.commands;
 
 import java.util.Set;
 
-import fr.lteconsulting.pomexplorer.Client;
 import fr.lteconsulting.pomexplorer.GAV;
 import fr.lteconsulting.pomexplorer.ILogger;
 import fr.lteconsulting.pomexplorer.PomSection;
@@ -21,14 +20,14 @@ import fr.lteconsulting.pomexplorer.graph.relation.Relation;
 public class ReleaseCommand
 {
 	@Help( "releases a gav, all dependencies are also released. GAVs depending on released GAVs are updated." )
-	public void gav( ILogger log, CommandOptions options, final Client client, WorkingSession session, GAV gav )
+	public void gav( ILogger log, CommandOptions options, WorkingSession session, GAV gav )
 	{
 		log.html( "<b>Releasing</b> project " + gav + "<br/>" );
 		log.html( "All dependencies will be updated to a release version.<br/><br/>" );
 
 		ChangeSetManager changes = new ChangeSetManager();
 
-		releaseGav( client, session, gav, changes, log );
+		releaseGav( session, gav, changes, log );
 
 		changes.resolveChanges( session, log );
 
@@ -38,7 +37,7 @@ public class ReleaseCommand
 	}
 
 	@Help( "releases all gavs, all dependencies are also released. GAVs depending on released GAVs are updated." )
-	public void allGavs( final ILogger log, CommandOptions options, Client client, WorkingSession session )
+	public void allGavs( final ILogger log, CommandOptions options, WorkingSession session )
 	{
 		ChangeSetManager changes = new ChangeSetManager();
 
@@ -53,7 +52,7 @@ public class ReleaseCommand
 			if( Tools.isReleased( gav ) )
 				continue;
 
-			releaseGav( client, session, gav, changes, log );
+			releaseGav( session, gav, changes, log );
 
 		}
 
@@ -64,7 +63,7 @@ public class ReleaseCommand
 		CommandTools.maybeApplyChanges( session, options, log, changes );
 	}
 
-	private void releaseGav( Client client, WorkingSession session, GAV gav, ChangeSetManager changes, ILogger log )
+	private void releaseGav( WorkingSession session, GAV gav, ChangeSetManager changes, ILogger log )
 	{
 		String causeMessage = "release of " + gav;
 

@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import fr.lteconsulting.pomexplorer.Client;
 import fr.lteconsulting.pomexplorer.GAV;
 import fr.lteconsulting.pomexplorer.ILogger;
 import fr.lteconsulting.pomexplorer.Project;
@@ -20,7 +19,7 @@ import fr.lteconsulting.pomexplorer.WorkingSession;
 public class CheckCommand
 {
 	@Help( "checks some commons points of errors, at least of attention..." )
-	public void main( Client client, WorkingSession session, ILogger log )
+	public void main( WorkingSession session, ILogger log )
 	{
 		List<GAV> gavsWithoutProject = gavsWithoutProject( session );
 		log.html( "<b>GAVs without projects</b><br/>" );

@@ -62,7 +62,7 @@ public class PomAnalyzer
 	 * @param session
 	 *            working session
 	 */
-	public void registerExternalDependency( WorkingSession session, Client client, ILogger log, GAV gav )
+	public void registerExternalDependency( WorkingSession session, ILogger log, GAV gav )
 	{
 		String mavenSettingsFilePath = session.getMavenSettingsFilePath();
 

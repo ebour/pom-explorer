@@ -2,7 +2,6 @@ package fr.lteconsulting.pomexplorer.commands;
 
 import java.util.List;
 
-import fr.lteconsulting.pomexplorer.Client;
 import fr.lteconsulting.pomexplorer.GAV;
 import fr.lteconsulting.pomexplorer.GavTools;
 import fr.lteconsulting.pomexplorer.ILogger;
@@ -15,13 +14,13 @@ import fr.lteconsulting.pomexplorer.javac.JavaSourceAnalyzer;
 public class ClassesCommand
 {
 	@Help( "gives the java classes provided by the session's gavs" )
-	public void main( WorkingSession session, ILogger log, Client client )
+	public void main( WorkingSession session, ILogger log )
 	{
-		providedBy( session, log, client, null );
+		providedBy( session, log, null );
 	}
 
 	@Help( "gives the java classes provided by the session's gavs, filtered by the given parameter" )
-	public void providedBy( WorkingSession session, ILogger log, Client client, FilteredGAVs gavFilter )
+	public void providedBy( WorkingSession session, ILogger log, FilteredGAVs gavFilter )
 	{
 		if( gavFilter == null )
 		{
