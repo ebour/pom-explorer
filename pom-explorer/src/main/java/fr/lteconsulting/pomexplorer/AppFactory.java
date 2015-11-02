@@ -81,145 +81,146 @@ public class AppFactory
 		return settings;
 	}
 
-	public WebServer webServer()
-	{
-		if( webServer == null )
-			webServer = new WebServer( xWebServer );
-
-		return webServer;
-	}
-
-	private XWebServer xWebServer = new XWebServer()
-	{
-		@Override
-		public void onNewClient( Client client ) {
-			System.out.println( "New client " + client.getId() );
-
-			final String talkId = MessageFactory.newGuid();
-
-			// running the default script
-			List<String> commands = Tools.readFileLines( "welcome.commands" );
-			for( String command : commands )
-			{
-				if( command.isEmpty() || command.startsWith( "#" ) )
-					continue;
-
-				if( command.startsWith( "=" ) )
-				{
-					String message = command.substring( 1 );
-					if( message.isEmpty() )
-						message = "<br/>";
-					client.sendHtml( talkId, message );
-				}
-				else
-				{
-					AppFactory.get().commands().takeCommand(client, createLogger(client, talkId), command);
-				}
-			}
-
-			client.sendClose( talkId );
-		}
-
-		@Override
-		public void onWebsocketMessage( Client client, String messageText )
-		{
-			Gson gson = new Gson();
-			Message message = gson.fromJson( messageText, Message.class );
-			if( message == null )
-			{
-				client.sendHtml( MessageFactory.newGuid(), Tools.warningMessage( "null message received !" ) );
-				return;
-			}
-
-			if( "text/command".equals( message.getPayloadFormat() ) )
-			{
-				AppFactory.get().commands().takeCommand( client, createLogger( client, message.getTalkGuid() ), message.getPayload() );
-			}
-			else if( "hangout/reply".equals( message.getPayloadFormat() ) )
-			{
-				for( int i = 0; i < waitingHangouts.size(); i++ )
-				{
-					HangOutHandle handle = waitingHangouts.get( i );
-					if( handle.message.getGuid().equals( message.getResponseTo() ) )
-					{
-						handle.answer = message.getPayload();
-						handle.waitingAnswer = false;
-						synchronized( handle )
-						{
-							handle.notify();
-						}
-					}
-				}
-			}
-			else
-			{
-				client.sendHtml( message.getTalkGuid(), Tools.warningMessage( "ununderstood message " + messageText + ".<br/>" ) );
-			}
-
-			client.sendClose( message.getTalkGuid() );
-
-		}
-
-		@Override
-		public String onGraphQuery( String sessionIdString )
-		{
-			List<WorkingSession> sessions = AppFactory.get().sessions();
-			if( sessions == null || sessions.isEmpty() )
-				return "No session available. Go to main page !";
-
-			WorkingSession session = null;
-
-			try
-			{
-				Integer sessionId = Integer.parseInt( sessionIdString );
-				if( sessionId != null )
-				{
-					for( WorkingSession s : sessions )
-					{
-						if( System.identityHashCode( s ) == sessionId )
-						{
-							session = s;
-							break;
-						}
-					}
-				}
-			}
-			catch( Exception e )
-			{
-			}
-
-			if( session == null )
-				session = sessions.get( 0 );
-
-			DirectedGraph<GAV, Relation> g = session.graph().internalGraph();
-
-			GraphDto dto = new GraphDto();
-			dto.gavs = new HashSet<>();
-			dto.relations = new HashSet<>();
-			for( GAV gav : g.vertexSet() )
-			{
-				dto.gavs.add( gav.toString() );
-
-				for( Relation relation : g.outgoingEdgesOf( gav ) )
-				{
-					GAV target = g.getEdgeTarget( relation );
-					EdgeDto edge = new EdgeDto( gav.toString(), target.toString(), relation );
-					dto.relations.add( edge );
-				}
-			}
-
-			Gson gson = new Gson();
-			String result = gson.toJson( dto );
-
-			return result;
-		}
-
-		@Override
-		public void onClientLeft( Client client )
-		{
-			System.out.println( "Client left." );
-		}
-	};
+//	public WebServer webServer()
+//	{
+//		if( webServer == null )
+//			webServer = new WebServer( xWebServer );
+//
+//		return webServer;
+//	}
+//
+//
+//	private XWebServer xWebServer = new XWebServer()
+//	{
+//		@Override
+//		public void onNewClient( Client client ) {
+//			System.out.println( "New client " + client.getId() );
+//
+//			final String talkId = MessageFactory.newGuid();
+//
+//			// running the default script
+//			List<String> commands = Tools.readFileLines( "welcome.commands" );
+//			for( String command : commands )
+//			{
+//				if( command.isEmpty() || command.startsWith( "#" ) )
+//					continue;
+//
+//				if( command.startsWith( "=" ) )
+//				{
+//					String message = command.substring( 1 );
+//					if( message.isEmpty() )
+//						message = "<br/>";
+//					client.sendHtml( talkId, message );
+//				}
+//				else
+//				{
+//					AppFactory.get().commands().takeCommand(client, createLogger(client, talkId), command);
+//				}
+//			}
+//
+//			client.sendClose( talkId );
+//		}
+//
+//		@Override
+//		public void onWebsocketMessage( Client client, String messageText )
+//		{
+//			Gson gson = new Gson();
+//			Message message = gson.fromJson( messageText, Message.class );
+//			if( message == null )
+//			{
+//				client.sendHtml( MessageFactory.newGuid(), Tools.warningMessage( "null message received !" ) );
+//				return;
+//			}
+//
+//			if( "text/command".equals( message.getPayloadFormat() ) )
+//			{
+//				AppFactory.get().commands().takeCommand( client, createLogger( client, message.getTalkGuid() ), message.getPayload() );
+//			}
+//			else if( "hangout/reply".equals( message.getPayloadFormat() ) )
+//			{
+//				for( int i = 0; i < waitingHangouts.size(); i++ )
+//				{
+//					HangOutHandle handle = waitingHangouts.get( i );
+//					if( handle.message.getGuid().equals( message.getResponseTo() ) )
+//					{
+//						handle.answer = message.getPayload();
+//						handle.waitingAnswer = false;
+//						synchronized( handle )
+//						{
+//							handle.notify();
+//						}
+//					}
+//				}
+//			}
+//			else
+//			{
+//				client.sendHtml( message.getTalkGuid(), Tools.warningMessage( "ununderstood message " + messageText + ".<br/>" ) );
+//			}
+//
+//			client.sendClose( message.getTalkGuid() );
+//
+//		}
+//
+//		@Override
+//		public String onGraphQuery( String sessionIdString )
+//		{
+//			List<WorkingSession> sessions = AppFactory.get().sessions();
+//			if( sessions == null || sessions.isEmpty() )
+//				return "No session available. Go to main page !";
+//
+//			WorkingSession session = null;
+//
+//			try
+//			{
+//				Integer sessionId = Integer.parseInt( sessionIdString );
+//				if( sessionId != null )
+//				{
+//					for( WorkingSession s : sessions )
+//					{
+//						if( System.identityHashCode( s ) == sessionId )
+//						{
+//							session = s;
+//							break;
+//						}
+//					}
+//				}
+//			}
+//			catch( Exception e )
+//			{
+//			}
+//
+//			if( session == null )
+//				session = sessions.get( 0 );
+//
+//			DirectedGraph<GAV, Relation> g = session.graph().internalGraph();
+//
+//			GraphDto dto = new GraphDto();
+//			dto.gavs = new HashSet<>();
+//			dto.relations = new HashSet<>();
+//			for( GAV gav : g.vertexSet() )
+//			{
+//				dto.gavs.add( gav.toString() );
+//
+//				for( Relation relation : g.outgoingEdgesOf( gav ) )
+//				{
+//					GAV target = g.getEdgeTarget( relation );
+//					EdgeDto edge = new EdgeDto( gav.toString(), target.toString(), relation );
+//					dto.relations.add( edge );
+//				}
+//			}
+//
+//			Gson gson = new Gson();
+//			String result = gson.toJson( dto );
+//
+//			return result;
+//		}
+//
+//		@Override
+//		public void onClientLeft( Client client )
+//		{
+//			System.out.println( "Client left." );
+//		}
+//	};
 
 	private final List<HangOutHandle> waitingHangouts = new ArrayList<>();
 

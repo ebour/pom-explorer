@@ -65,125 +65,125 @@ public class GraphCommand
 	@Help( "exports a GraphML file" )
 	public void export( WorkingSession session, ILogger log )
 	{
-		try
-		{
-			GraphMLExporter<GAV, Relation> exporter = new GraphMLExporter<GAV, Relation>( new IntegerNameProvider<GAV>(), new VertexNameProvider<GAV>()
-			{
-				@Override
-				public String getVertexName( GAV vertex )
-				{
-					return vertex.toString();
-				}
-			}, new IntegerEdgeNameProvider<Relation>(), new EdgeNameProvider<Relation>()
-			{
-				@Override
-				public String getEdgeName( Relation edge )
-				{
-					return edge.toString();
-				}
-			} );
-
-			GraphMLExporter<Repository, RepositoryRelation> repoExporter = new GraphMLExporter<Repository, RepositoryRelation>( new IntegerNameProvider<Repository>(), new VertexNameProvider<Repository>()
-			{
-				@Override
-				public String getVertexName( Repository vertex )
-				{
-					return vertex.toString();
-				}
-			}, new IntegerEdgeNameProvider<RepositoryRelation>(), new EdgeNameProvider<RepositoryRelation>()
-			{
-				@Override
-				public String getEdgeName( RepositoryRelation edge )
-				{
-					return edge.toString();
-				}
-			} );
-
-			DirectedGraph<GAV, Relation> g = session.graph().internalGraph();
-
-			DirectedGraph<GAV, Relation> ng = new DirectedMultigraph<GAV, Relation>( Relation.class );
-			for( GAV gav : g.vertexSet() )
-			{
-				if( !isOkGav( gav ) )
-					continue;
-
-				ng.addVertex( gav );
-
-				for( Relation relation : g.outgoingEdgesOf( gav ) )
-				{
-					GAV target = g.getEdgeTarget( relation );
-
-					if( !isOkGav( target ) )
-						continue;
-
-					if( !isOkRelation( relation ) )
-						continue;
-
-					ng.addVertex( target );
-
-					ng.addEdge( gav, target, relation );
-				}
-			}
-
-			DirectedGraph<Repository, RepositoryRelation> repoGraph = new DirectedMultigraph<Repository, RepositoryRelation>( RepositoryRelation.class );
-			for( GAV gav : ng.vertexSet() )
-			{
-				String repoPath = getGAVRepository( session, gav );
-				if( repoPath == null )
-					continue;
-
-				Repository repo = new Repository( new File( repoPath ).toPath() );
-				repoGraph.addVertex( repo );
-
-				for( Relation relation : ng.outgoingEdgesOf( gav ) )
-				{
-					GAV target = ng.getEdgeTarget( relation );
-					String targetRepoPath = getGAVRepository( session, target );
-					if( targetRepoPath == null )
-						continue;
-
-					Repository targetRepo = new Repository( new File( targetRepoPath ).toPath() );
-
-					if( repo.equals( targetRepo ) )
-						continue;
-
-					repoGraph.addVertex( targetRepo );
-
-					RepositoryRelation rr = repoGraph.getEdge( repo, targetRepo );
-					if( rr == null )
-					{
-						rr = new RepositoryRelation();
-						repoGraph.addEdge( repo, targetRepo, rr );
-					}
-
-					if( relation.getClass() == ParentRelation.class )
-						rr.addRelation( "PARENT" );
-					else if( relation.getClass() == DependencyRelation.class )
-						rr.addRelation( "DEP" );
-					else if( relation.getClass() == BuildDependencyRelation.class )
-						rr.addRelation( "BUILD" );
-				}
-			}
-
-			String graphFileName = "graph-session-" + System.identityHashCode( session ) + "-" + new Date().getTime() + ".graphml";
-			Writer writer = AppFactory.get().webServer().pushFile( graphFileName );
-			exporter.export( writer, ng );
-			writer.close();
-
-			String graphReposFileName = "graph-repos-session-" + System.identityHashCode( session ) + "-" + new Date().getTime() + ".graphml";
-			writer = AppFactory.get().webServer().pushFile( graphReposFileName );
-			repoExporter.export( writer, repoGraph );
-			writer.close();
-
-			String url = AppFactory.get().webServer().getFileUrl( graphFileName );
-
-			log.html( "GraphML file for the whole dependency graph is available here : <a href='" + url + "' target='_blank'>" + url + "</a><br/>" );
-			log.html( "GraphML file for the git repositories is available here : <a href='" + url + "' target='_blank'>" + url + "</a><br/>" );
-		}
-		catch( Exception e )
-		{
-			log.html( Tools.errorMessage( "Error ! : " + e.getMessage() ) );
-		}
+//		try
+//		{
+//			GraphMLExporter<GAV, Relation> exporter = new GraphMLExporter<GAV, Relation>( new IntegerNameProvider<GAV>(), new VertexNameProvider<GAV>()
+//			{
+//				@Override
+//				public String getVertexName( GAV vertex )
+//				{
+//					return vertex.toString();
+//				}
+//			}, new IntegerEdgeNameProvider<Relation>(), new EdgeNameProvider<Relation>()
+//			{
+//				@Override
+//				public String getEdgeName( Relation edge )
+//				{
+//					return edge.toString();
+//				}
+//			} );
+//
+//			GraphMLExporter<Repository, RepositoryRelation> repoExporter = new GraphMLExporter<Repository, RepositoryRelation>( new IntegerNameProvider<Repository>(), new VertexNameProvider<Repository>()
+//			{
+//				@Override
+//				public String getVertexName( Repository vertex )
+//				{
+//					return vertex.toString();
+//				}
+//			}, new IntegerEdgeNameProvider<RepositoryRelation>(), new EdgeNameProvider<RepositoryRelation>()
+//			{
+//				@Override
+//				public String getEdgeName( RepositoryRelation edge )
+//				{
+//					return edge.toString();
+//				}
+//			} );
+//
+//			DirectedGraph<GAV, Relation> g = session.graph().internalGraph();
+//
+//			DirectedGraph<GAV, Relation> ng = new DirectedMultigraph<GAV, Relation>( Relation.class );
+//			for( GAV gav : g.vertexSet() )
+//			{
+//				if( !isOkGav( gav ) )
+//					continue;
+//
+//				ng.addVertex( gav );
+//
+//				for( Relation relation : g.outgoingEdgesOf( gav ) )
+//				{
+//					GAV target = g.getEdgeTarget( relation );
+//
+//					if( !isOkGav( target ) )
+//						continue;
+//
+//					if( !isOkRelation( relation ) )
+//						continue;
+//
+//					ng.addVertex( target );
+//
+//					ng.addEdge( gav, target, relation );
+//				}
+//			}
+//
+//			DirectedGraph<Repository, RepositoryRelation> repoGraph = new DirectedMultigraph<Repository, RepositoryRelation>( RepositoryRelation.class );
+//			for( GAV gav : ng.vertexSet() )
+//			{
+//				String repoPath = getGAVRepository( session, gav );
+//				if( repoPath == null )
+//					continue;
+//
+//				Repository repo = new Repository( new File( repoPath ).toPath() );
+//				repoGraph.addVertex( repo );
+//
+//				for( Relation relation : ng.outgoingEdgesOf( gav ) )
+//				{
+//					GAV target = ng.getEdgeTarget( relation );
+//					String targetRepoPath = getGAVRepository( session, target );
+//					if( targetRepoPath == null )
+//						continue;
+//
+//					Repository targetRepo = new Repository( new File( targetRepoPath ).toPath() );
+//
+//					if( repo.equals( targetRepo ) )
+//						continue;
+//
+//					repoGraph.addVertex( targetRepo );
+//
+//					RepositoryRelation rr = repoGraph.getEdge( repo, targetRepo );
+//					if( rr == null )
+//					{
+//						rr = new RepositoryRelation();
+//						repoGraph.addEdge( repo, targetRepo, rr );
+//					}
+//
+//					if( relation.getClass() == ParentRelation.class )
+//						rr.addRelation( "PARENT" );
+//					else if( relation.getClass() == DependencyRelation.class )
+//						rr.addRelation( "DEP" );
+//					else if( relation.getClass() == BuildDependencyRelation.class )
+//						rr.addRelation( "BUILD" );
+//				}
+//			}
+//
+//			String graphFileName = "graph-session-" + System.identityHashCode( session ) + "-" + new Date().getTime() + ".graphml";
+//			Writer writer = AppFactory.get().webServer().pushFile( graphFileName );
+//			exporter.export( writer, ng );
+//			writer.close();
+//
+//			String graphReposFileName = "graph-repos-session-" + System.identityHashCode( session ) + "-" + new Date().getTime() + ".graphml";
+//			writer = AppFactory.get().webServer().pushFile( graphReposFileName );
+//			repoExporter.export( writer, repoGraph );
+//			writer.close();
+//
+//			String url = AppFactory.get().webServer().getFileUrl( graphFileName );
+//
+//			log.html( "GraphML file for the whole dependency graph is available here : <a href='" + url + "' target='_blank'>" + url + "</a><br/>" );
+//			log.html( "GraphML file for the git repositories is available here : <a href='" + url + "' target='_blank'>" + url + "</a><br/>" );
+//		}
+//		catch( Exception e )
+//		{
+//			log.html( Tools.errorMessage( "Error ! : " + e.getMessage() ) );
+//		}
 	}
 
 	private String getGAVRepository( WorkingSession session, GAV gav )
