@@ -5,16 +5,16 @@ import java.util.Set;
 
 public class RepositoryRelation
 {
-	private final Set<String> relations = new HashSet<>();
+    private final Set<String> relations = new HashSet<>();
 
-	public void addRelation( String name )
-	{
-		relations.add( name );
-	}
+    public void addRelation(String name)
+    {
+        relations.add(name);
+    }
 
-	@Override
-	public String toString()
-	{
-		return relations.toString();
-	}
+    @Override
+    public String toString()
+    {
+        return relations.toString();
+    }
 }

@@ -5,8 +5,8 @@ package fr.lteconsulting.pomexplorer;
  */
 public class PomExporerApp
 {
-	public static void main( String[] args )
-	{
-		// TODO: connect directly an interactive console
-	}
+    public static void main(String[] args)
+    {
+        // TODO: connect directly an interactive console
+    }
 }

@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Created by ebour on 02/11/15.
  */
-@Retention( RetentionPolicy.RUNTIME )
+@Retention(RetentionPolicy.RUNTIME)
 public @interface Command
 {
 }

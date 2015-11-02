@@ -1,107 +1,108 @@
 package fr.lteconsulting.pomexplorer.commands;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import fr.lteconsulting.pomexplorer.GAV;
-import fr.lteconsulting.pomexplorer.ILogger;
-import fr.lteconsulting.pomexplorer.Project;
-import fr.lteconsulting.pomexplorer.Tools;
-import fr.lteconsulting.pomexplorer.WorkingSession;
+import fr.lteconsulting.pomexplorer.*;
 import fr.lteconsulting.pomexplorer.depanalyze.GavLocation;
 import fr.lteconsulting.pomexplorer.depanalyze.Location;
 import fr.lteconsulting.pomexplorer.graph.relation.GAVRelation;
 import fr.lteconsulting.pomexplorer.graph.relation.Relation;
 import fr.lteconsulting.pomexplorer.graph.relation.Relation.RelationType;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Command
-public class DependsCommand
+public class DependsCommand extends AbstractCommand
 {
-	@Help( "lists the GAVs directly depending on the one given in parameter" )
-	public void on( WorkingSession session, ILogger log, GAV gav )
-	{
-		Set<GAVRelation<Relation>> relations = session.graph().relationsReverse( gav );
+    public DependsCommand(Application application)
+    {
+        super(application);
+    }
 
-		log.html( "<br/><b>Directly depending on " + gav + "</b>, " + relations.size() + " GAVs :<br/>" );
-		log.html( "([" + RelationType.DEPENDENCY.shortName() + "]=direct dependency, [" + RelationType.PARENT.shortName() + "]=parent's dependency, [" + RelationType.BUILD_DEPENDENCY.shortName() + "]=build dependency)<br/><br/>" );
+    @Help("lists the GAVs directly depending on the one given in parameter")
+    public void on(WorkingSession session, ILogger log, GAV gav)
+    {
+        Set<GAVRelation<Relation>> relations = session.graph().relationsReverse(gav);
 
-		Set<GAV> indirectDependents = new HashSet<>();
+        log.html("<br/><b>Directly depending on " + gav + "</b>, " + relations.size() + " GAVs :<br/>");
+        log.html("([" + RelationType.DEPENDENCY.shortName() + "]=direct dependency, [" + RelationType.PARENT.shortName() + "]=parent's dependency, [" + RelationType.BUILD_DEPENDENCY.shortName() + "]=build dependency)<br/><br/>");
 
-		for( GAVRelation<Relation> relation : relations )
-		{
-			GAV source = relation.getSource();
+        Set<GAV> indirectDependents = new HashSet<>();
 
-			RelationType type = relation.getRelation().getRelationType();
+        for (GAVRelation<Relation> relation : relations)
+        {
+            GAV source = relation.getSource();
 
-			log.html( "[" + type.shortName() + "] " + source + " " );
+            RelationType type = relation.getRelation().getRelationType();
 
-			fillTextForDependency( session, log, relation );
+            log.html("[" + type.shortName() + "] " + source + " ");
 
-			log.html( "<br/>" );
+            fillTextForDependency(session, log, relation);
 
-			Set<GAVRelation<Relation>> indirectRelations = session.graph().relationsReverseRec( source );
-			for( GAVRelation<Relation> ir : indirectRelations )
-				indirectDependents.add( ir.getSource() );
-		}
+            log.html("<br/>");
 
-		log.html( "<br/><b>Indirectly depending on " + gav + "</b>, " + indirectDependents.size() + " GAVs :<br/>" );
-		for( GAV d : indirectDependents )
-			log.html( d + "<br/>" );
-	}
+            Set<GAVRelation<Relation>> indirectRelations = session.graph().relationsReverseRec(source);
+            for (GAVRelation<Relation> ir : indirectRelations)
+                indirectDependents.add(ir.getSource());
+        }
 
-	@Help( "lists the GAVs that the GAV passed in parameters depends on" )
-	public void by( WorkingSession session, ILogger log, GAV gav )
-	{
-		Set<GAVRelation<Relation>> relations = session.graph().relations( gav );
+        log.html("<br/><b>Indirectly depending on " + gav + "</b>, " + indirectDependents.size() + " GAVs :<br/>");
+        for (GAV d : indirectDependents)
+            log.html(d + "<br/>");
+    }
 
-		log.html( "<br/><b>" + gav + " directly depends on</b> " + relations.size() + " GAVs :<br/>" );
-		log.html( "([" + RelationType.DEPENDENCY.shortName() + "]=direct dependency, [" + RelationType.PARENT.shortName() + "]=parent's dependency, [" + RelationType.BUILD_DEPENDENCY.shortName() + "]=build dependency)<br/><br/>" );
+    @Help("lists the GAVs that the GAV passed in parameters depends on")
+    public void by(WorkingSession session, ILogger log, GAV gav)
+    {
+        Set<GAVRelation<Relation>> relations = session.graph().relations(gav);
 
-		Set<GAV> indirectDependents = new HashSet<>();
+        log.html("<br/><b>" + gav + " directly depends on</b> " + relations.size() + " GAVs :<br/>");
+        log.html("([" + RelationType.DEPENDENCY.shortName() + "]=direct dependency, [" + RelationType.PARENT.shortName() + "]=parent's dependency, [" + RelationType.BUILD_DEPENDENCY.shortName() + "]=build dependency)<br/><br/>");
 
-		for( GAVRelation<Relation> relation : relations )
-		{
-			GAV target = relation.getTarget();
-			RelationType type = relation.getRelation().getRelationType();
+        Set<GAV> indirectDependents = new HashSet<>();
 
-			log.html( "[" + type.shortName() + "] " + target + " " );
-			fillTextForDependency( session, log, relation );
-			log.html( "<br/>" );
+        for (GAVRelation<Relation> relation : relations)
+        {
+            GAV target = relation.getTarget();
+            RelationType type = relation.getRelation().getRelationType();
 
-			Set<GAVRelation<Relation>> indirectRelations = session.graph().relationsRec( target );
-			for( GAVRelation<Relation> ir : indirectRelations )
-				indirectDependents.add( ir.getTarget() );
-		}
+            log.html("[" + type.shortName() + "] " + target + " ");
+            fillTextForDependency(session, log, relation);
+            log.html("<br/>");
 
-		log.html( "<br/><b>" + gav + " indirectly depends on</b> " + indirectDependents.size() + " GAVs :<br/>" );
-		for( GAV d : indirectDependents )
-			log.html( d + "<br/>" );
-	}
+            Set<GAVRelation<Relation>> indirectRelations = session.graph().relationsRec(target);
+            for (GAVRelation<Relation> ir : indirectRelations)
+                indirectDependents.add(ir.getTarget());
+        }
 
-	private void fillTextForDependency( WorkingSession session, ILogger log, GAVRelation<Relation> relation )
-	{
-		GAV source = relation.getSource();
+        log.html("<br/><b>" + gav + " indirectly depends on</b> " + indirectDependents.size() + " GAVs :<br/>");
+        for (GAV d : indirectDependents)
+            log.html(d + "<br/>");
+    }
 
-		Project sourceProject = session.projects().forGav( source );
-		if( sourceProject == null )
-		{
-			log.html( Tools.warningMessage( "(no project for this GAV, dependency locations not analyzed)" ) );
-			return;
-		}
+    private void fillTextForDependency(WorkingSession session, ILogger log, GAVRelation<Relation> relation)
+    {
+        GAV source = relation.getSource();
 
-		log.html( "declared at : " );
-		Location location = Tools.findDependencyLocation( session, log, sourceProject, relation );
-		log.html( location.toString() );
+        Project sourceProject = session.projects().forGav(source);
+        if (sourceProject == null)
+        {
+            log.html(Tools.warningMessage("(no project for this GAV, dependency locations not analyzed)"));
+            return;
+        }
 
-		if( location instanceof GavLocation )
-		{
-			GavLocation gavLocation = (GavLocation) location;
-			if( Tools.isMavenVariable( gavLocation.getUnresolvedGav().getVersion() ) )
-			{
-				String property = Tools.getPropertyNameFromPropertyReference( gavLocation.getUnresolvedGav().getVersion() );
-				Project definitionProject = Tools.getPropertyDefinitionProject( session, gavLocation.getProject(), property );
-				log.html( ", property ${" + property + "} defined in project " + definitionProject.getGav() );
-			}
-		}
-	}
+        log.html("declared at : ");
+        Location location = Tools.findDependencyLocation(session, log, sourceProject, relation);
+        log.html(location.toString());
+
+        if (location instanceof GavLocation)
+        {
+            GavLocation gavLocation = (GavLocation) location;
+            if (Tools.isMavenVariable(gavLocation.getUnresolvedGav().getVersion()))
+            {
+                String property = Tools.getPropertyNameFromPropertyReference(gavLocation.getUnresolvedGav().getVersion());
+                Project definitionProject = Tools.getPropertyDefinitionProject(session, gavLocation.getProject(), property);
+                log.html(", property ${" + property + "} defined in project " + definitionProject.getGav());
+            }
+        }
+    }
 }

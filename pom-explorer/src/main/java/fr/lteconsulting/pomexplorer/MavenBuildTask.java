@@ -6,37 +6,36 @@ import java.io.InputStreamReader;
 
 public class MavenBuildTask
 {
-	public Boolean build( WorkingSession session, Project project )
-	{
-		try
-		{
-			log( project, "start ..." );
-			Process p = Runtime.getRuntime().exec( new String[] { session.getMavenShellCommand(), "install", "-N", "-DskipTests" }, null, project.getPomFile().getParentFile() );
+    public Boolean build(WorkingSession session, Project project)
+    {
+        try
+        {
+            log(project, "start ...");
+            Process p = Runtime.getRuntime().exec(new String[]{session.getMavenShellCommand(), "install", "-N", "-DskipTests"}, null, project.getPomFile().getParentFile());
 
-			BufferedReader reader = new BufferedReader( new InputStreamReader( p.getInputStream() ) );
-			String line = "";
-			while( (line = reader.readLine()) != null )
-			{
-				log( project, line );
-			}
+            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            String line = "";
+            while ((line = reader.readLine()) != null)
+            {
+                log(project, line);
+            }
 
-			p.waitFor();
+            p.waitFor();
 
-			log( project, "done (" + p.exitValue() + ")." );
+            log(project, "done (" + p.exitValue() + ").");
 
-			return p.exitValue() == 0;
-		}
-		catch( IOException | InterruptedException e )
-		{
-			log( project, "error ! " + e );
+            return p.exitValue() == 0;
+        } catch (IOException | InterruptedException e)
+        {
+            log(project, "error ! " + e);
 
-			return false;
-		}
-	}
+            return false;
+        }
+    }
 
-	private void log( Project project, String message )
-	{
-		message = Tools.buildMessage( "[building " + project.getGav() + "] " + message );
-		System.out.println(message);
-	}
+    private void log(Project project, String message)
+    {
+        message = Tools.buildMessage("[building " + project.getGav() + "] " + message);
+        System.out.println(message);
+    }
 }

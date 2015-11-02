@@ -1,14 +1,20 @@
 package fr.lteconsulting.pomexplorer.commands;
 
-import fr.lteconsulting.pomexplorer.AppFactory;
+import fr.lteconsulting.pomexplorer.Application;
 import fr.lteconsulting.pomexplorer.ILogger;
 
 @Command
-public class HelpCommand
+public class HelpCommand extends AbstractCommand
 {
-	@Help( "gives this message" )
-	public void main( ILogger log )
-	{
-		log.html( AppFactory.get().commands().help() );
-	}
+    public HelpCommand(Application application)
+    {
+        super(application);
+    }
+
+    @Help("gives this message")
+    public void main(ILogger log)
+    {
+        log.html(commands().help());
+    }
+
 }

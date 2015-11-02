@@ -2,14 +2,14 @@ package fr.lteconsulting.pomexplorer.graph.relation;
 
 public class ParentRelation extends Relation
 {
-	public ParentRelation()
-	{
-		super( RelationType.PARENT );
-	}
+    public ParentRelation()
+    {
+        super(RelationType.PARENT);
+    }
 
-	@Override
-	public String toString()
-	{
-		return "parent";
-	}
+    @Override
+    public String toString()
+    {
+        return "parent";
+    }
 }

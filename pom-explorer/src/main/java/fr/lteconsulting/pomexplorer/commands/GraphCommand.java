@@ -1,70 +1,54 @@
 package fr.lteconsulting.pomexplorer.commands;
 
-import java.io.File;
-import java.io.Writer;
-import java.util.Date;
+import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
+import fr.lteconsulting.pomexplorer.*;
+import fr.lteconsulting.pomexplorer.graph.relation.BuildDependencyRelation;
+import fr.lteconsulting.pomexplorer.graph.relation.DependencyRelation;
+import fr.lteconsulting.pomexplorer.graph.relation.Relation;
+import org.jgrapht.DirectedGraph;
+import org.jgrapht.ext.JGraphXAdapter;
+import org.jgrapht.graph.DirectedSubgraph;
+
 import java.util.HashSet;
 import java.util.Set;
 
-import org.jgrapht.DirectedGraph;
-import org.jgrapht.ext.EdgeNameProvider;
-import org.jgrapht.ext.GraphMLExporter;
-import org.jgrapht.ext.IntegerEdgeNameProvider;
-import org.jgrapht.ext.IntegerNameProvider;
-import org.jgrapht.ext.JGraphXAdapter;
-import org.jgrapht.ext.VertexNameProvider;
-import org.jgrapht.graph.DirectedMultigraph;
-import org.jgrapht.graph.DirectedSubgraph;
-
-import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
-
-import fr.lteconsulting.pomexplorer.AppFactory;
-import fr.lteconsulting.pomexplorer.GAV;
-import fr.lteconsulting.pomexplorer.GitTools;
-import fr.lteconsulting.pomexplorer.GraphFrame;
-import fr.lteconsulting.pomexplorer.ILogger;
-import fr.lteconsulting.pomexplorer.Project;
-import fr.lteconsulting.pomexplorer.Tools;
-import fr.lteconsulting.pomexplorer.WorkingSession;
-import fr.lteconsulting.pomexplorer.graph.Repository;
-import fr.lteconsulting.pomexplorer.graph.RepositoryRelation;
-import fr.lteconsulting.pomexplorer.graph.relation.BuildDependencyRelation;
-import fr.lteconsulting.pomexplorer.graph.relation.DependencyRelation;
-import fr.lteconsulting.pomexplorer.graph.relation.ParentRelation;
-import fr.lteconsulting.pomexplorer.graph.relation.Relation;
-
 @Command
-public class GraphCommand
+public class GraphCommand extends AbstractCommand
 {
-	@Help( "displays an interactive 3d WebGL graph of the pom data" )
-	public void main( WorkingSession session, ILogger log )
-	{
-		String url = "graph.html?session=" + System.identityHashCode( session );
-		log.html( "To display the graph, go to : <a href='" + url + "' target='_blank'>" + url + "</a><br/>" );
-	}
+    public GraphCommand(Application application)
+    {
+        super(application);
+    }
 
-	private boolean isOkGav( GAV gav )
-	{
-		return true;
-	}
+    @Help("displays an interactive 3d WebGL graph of the pom data")
+    public void main(WorkingSession session, ILogger log)
+    {
+        String url = "graph.html?session=" + System.identityHashCode(session);
+        log.html("To display the graph, go to : <a href='" + url + "' target='_blank'>" + url + "</a><br/>");
+    }
 
-	private boolean isOkRelation( Relation relation )
-	{
-		if( relation instanceof BuildDependencyRelation )
-			return false;
+    private boolean isOkGav(GAV gav)
+    {
+        return true;
+    }
 
-		if( relation instanceof DependencyRelation )
-		{
-			if( "test".equals( relation.asDependencyRelation().getScope().toLowerCase() ) )
-				return false;
-		}
+    private boolean isOkRelation(Relation relation)
+    {
+        if (relation instanceof BuildDependencyRelation)
+            return false;
 
-		return true;
-	}
+        if (relation instanceof DependencyRelation)
+        {
+            if ("test".equals(relation.asDependencyRelation().getScope().toLowerCase()))
+                return false;
+        }
 
-	@Help( "exports a GraphML file" )
-	public void export( WorkingSession session, ILogger log )
-	{
+        return true;
+    }
+
+    @Help("exports a GraphML file")
+    public void export(WorkingSession session, ILogger log)
+    {
 //		try
 //		{
 //			GraphMLExporter<GAV, Relation> exporter = new GraphMLExporter<GAV, Relation>( new IntegerNameProvider<GAV>(), new VertexNameProvider<GAV>()
@@ -166,16 +150,16 @@ public class GraphCommand
 //			}
 //
 //			String graphFileName = "graph-session-" + System.identityHashCode( session ) + "-" + new Date().getTime() + ".graphml";
-//			Writer writer = AppFactory.get().webServer().pushFile( graphFileName );
+//			Writer writer = ApplicationFactory.get().webServer().pushFile( graphFileName );
 //			exporter.export( writer, ng );
 //			writer.close();
 //
 //			String graphReposFileName = "graph-repos-session-" + System.identityHashCode( session ) + "-" + new Date().getTime() + ".graphml";
-//			writer = AppFactory.get().webServer().pushFile( graphReposFileName );
+//			writer = ApplicationFactory.get().webServer().pushFile( graphReposFileName );
 //			repoExporter.export( writer, repoGraph );
 //			writer.close();
 //
-//			String url = AppFactory.get().webServer().getFileUrl( graphFileName );
+//			String url = ApplicationFactory.get().webServer().getFileUrl( graphFileName );
 //
 //			log.html( "GraphML file for the whole dependency graph is available here : <a href='" + url + "' target='_blank'>" + url + "</a><br/>" );
 //			log.html( "GraphML file for the git repositories is available here : <a href='" + url + "' target='_blank'>" + url + "</a><br/>" );
@@ -184,57 +168,57 @@ public class GraphCommand
 //		{
 //			log.html( Tools.errorMessage( "Error ! : " + e.getMessage() ) );
 //		}
-	}
+    }
 
-	private String getGAVRepository( WorkingSession session, GAV gav )
-	{
-		Project project = session.projects().forGav( gav );
-		if( project == null )
-			return null;
+    private String getGAVRepository(WorkingSession session, GAV gav)
+    {
+        Project project = session.projects().forGav(gav);
+        if (project == null)
+            return null;
 
-		return GitTools.findGitRoot( project.getPomFile().getParent() );
-	}
+        return GitTools.findGitRoot(project.getPomFile().getParent());
+    }
 
-	@Help( "displays a graph on the server machine" )
-	public void server( WorkingSession session, ILogger log )
-	{
-		server( session, null, log );
-	}
+    @Help("displays a graph on the server machine")
+    public void server(WorkingSession session, ILogger log)
+    {
+        server(session, null, log);
+    }
 
-	@Help( "displays a graph on the server machine. Parameter is the filter for GAVs" )
-	public void server( WorkingSession session, String filter, ILogger log )
-	{
-		if( filter != null )
-			filter = filter.toLowerCase();
+    @Help("displays a graph on the server machine. Parameter is the filter for GAVs")
+    public void server(WorkingSession session, String filter, ILogger log)
+    {
+        if (filter != null)
+            filter = filter.toLowerCase();
 
-		DirectedGraph<GAV, Relation> fullGraph = session.graph().internalGraph();
+        DirectedGraph<GAV, Relation> fullGraph = session.graph().internalGraph();
 
-		Set<GAV> vertexSubset = new HashSet<>();
-		for( GAV gav : fullGraph.vertexSet() )
-		{
-			if( filter == null || gav.toString().toLowerCase().contains( filter ) )
-				vertexSubset.add( gav );
-		}
+        Set<GAV> vertexSubset = new HashSet<>();
+        for (GAV gav : fullGraph.vertexSet())
+        {
+            if (filter == null || gav.toString().toLowerCase().contains(filter))
+                vertexSubset.add(gav);
+        }
 
-		Set<Relation> edgeSubset = new HashSet<>();
-		for( Relation r : fullGraph.edgeSet() )
-		{
-			if( vertexSubset.contains( fullGraph.getEdgeSource( r ) ) && vertexSubset.contains( fullGraph.getEdgeTarget( r ) ) )
-				edgeSubset.add( r );
-		}
+        Set<Relation> edgeSubset = new HashSet<>();
+        for (Relation r : fullGraph.edgeSet())
+        {
+            if (vertexSubset.contains(fullGraph.getEdgeSource(r)) && vertexSubset.contains(fullGraph.getEdgeTarget(r)))
+                edgeSubset.add(r);
+        }
 
-		DirectedSubgraph<GAV, Relation> subGraph = new DirectedSubgraph<>( fullGraph, vertexSubset, edgeSubset );
+        DirectedSubgraph<GAV, Relation> subGraph = new DirectedSubgraph<>(fullGraph, vertexSubset, edgeSubset);
 
-		JGraphXAdapter<GAV, Relation> ga = new JGraphXAdapter<>( subGraph );
+        JGraphXAdapter<GAV, Relation> ga = new JGraphXAdapter<>(subGraph);
 
-		new GraphFrame( ga );
+        new GraphFrame(ga);
 
-		mxHierarchicalLayout layout = new mxHierarchicalLayout( ga );
-		// mxFastOrganicLayout layout = new mxFastOrganicLayout( ga );
-		layout.setUseBoundingBox( true );
-		// layout.setForceConstant( 200 );
-		layout.execute( ga.getDefaultParent() );
+        mxHierarchicalLayout layout = new mxHierarchicalLayout(ga);
+        // mxFastOrganicLayout layout = new mxFastOrganicLayout( ga );
+        layout.setUseBoundingBox(true);
+        // layout.setForceConstant( 200 );
+        layout.execute(ga.getDefaultParent());
 
-		log.html( "ok, graph displayed on the server.<br/>" );
-	}
+        log.html("ok, graph displayed on the server.<br/>");
+    }
 }

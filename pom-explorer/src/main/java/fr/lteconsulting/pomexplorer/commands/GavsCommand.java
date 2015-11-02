@@ -1,55 +1,57 @@
 package fr.lteconsulting.pomexplorer.commands;
 
-import fr.lteconsulting.pomexplorer.GAV;
-import fr.lteconsulting.pomexplorer.ILogger;
-import fr.lteconsulting.pomexplorer.PomAnalyzer;
-import fr.lteconsulting.pomexplorer.WorkingSession;
+import fr.lteconsulting.pomexplorer.*;
 
 @Command
-public class GavsCommand
+public class GavsCommand extends AbstractCommand
 {
-	@Help( "list the session's GAVs" )
-	public void main( WorkingSession session, ILogger log )
-	{
-		list( session, log );
-	}
+    public GavsCommand(Application application)
+    {
+        super(application);
+    }
 
-	@Help( "list the session's GAVs" )
-	public void list( WorkingSession session, ILogger log )
-	{
-		list( session, null, log );
-	}
+    @Help("list the session's GAVs")
+    public void main(WorkingSession session, ILogger log)
+    {
+        list(session, log);
+    }
 
-	@Help( "list the session's GAVs, with filtering" )
-	public void list( WorkingSession session, FilteredGAVs gavFilter, ILogger log )
-	{
-		log.html( "<br/>GAV list filtered with '" + (gavFilter != null ? gavFilter.getFilter() : "no filter") + "' :<br/>" );
-		if( gavFilter != null )
-			gavFilter.getGavs( session ).forEach( gav -> log.html( gav + "<br/>" ) );
-		else
-			session.graph().gavs().forEach( gav -> log.html( gav + "<br/>" ) );
-	}
+    @Help("list the session's GAVs")
+    public void list(WorkingSession session, ILogger log)
+    {
+        list(session, null, log);
+    }
 
-	@Help( "analyze all the gav's dependencies and add them in the pom graph." )
-	public void add( WorkingSession session, ILogger log, GAV gav )
-	{
-		PomAnalyzer analyzer = new PomAnalyzer();
+    @Help("list the session's GAVs, with filtering")
+    public void list(WorkingSession session, FilteredGAVs gavFilter, ILogger log)
+    {
+        log.html("<br/>GAV list filtered with '" + (gavFilter != null ? gavFilter.getFilter() : "no filter") + "' :<br/>");
+        if (gavFilter != null)
+            gavFilter.getGavs(session).forEach(gav -> log.html(gav + "<br/>"));
+        else
+            session.graph().gavs().forEach(gav -> log.html(gav + "<br/>"));
+    }
 
-		analyzer.registerExternalDependency( session, log, gav );
+    @Help("analyze all the gav's dependencies and add them in the pom graph.")
+    public void add(WorkingSession session, ILogger log, GAV gav)
+    {
+        PomAnalyzer analyzer = new PomAnalyzer();
 
-		log.html( "finished !<br/>" );
-	}
+        analyzer.registerExternalDependency(session, log, gav);
 
-	@Help( "analyze gavs which have no associated project" )
-	public void resolve( WorkingSession session, ILogger log )
-	{
-		PomAnalyzer analyzer = new PomAnalyzer();
+        log.html("finished !<br/>");
+    }
 
-		session.graph().gavs().stream().filter( gav -> session.projects().forGav( gav ) == null ).parallel().forEach( gav -> {
-			log.html( "analyzing " + gav + "...<br/>" );
-			analyzer.registerExternalDependency( session, log, gav );
-		} );
+    @Help("analyze gavs which have no associated project")
+    public void resolve(WorkingSession session, ILogger log)
+    {
+        PomAnalyzer analyzer = new PomAnalyzer();
 
-		log.html( "finished !<br/>" );
-	}
+        session.graph().gavs().stream().filter(gav -> session.projects().forGav(gav) == null).parallel().forEach(gav -> {
+            log.html("analyzing " + gav + "...<br/>");
+            analyzer.registerExternalDependency(session, log, gav);
+        });
+
+        log.html("finished !<br/>");
+    }
 }

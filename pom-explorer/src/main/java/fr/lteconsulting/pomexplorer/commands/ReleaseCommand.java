@@ -1,13 +1,6 @@
 package fr.lteconsulting.pomexplorer.commands;
 
-import java.util.Set;
-
-import fr.lteconsulting.pomexplorer.GAV;
-import fr.lteconsulting.pomexplorer.ILogger;
-import fr.lteconsulting.pomexplorer.PomSection;
-import fr.lteconsulting.pomexplorer.Project;
-import fr.lteconsulting.pomexplorer.Tools;
-import fr.lteconsulting.pomexplorer.WorkingSession;
+import fr.lteconsulting.pomexplorer.*;
 import fr.lteconsulting.pomexplorer.changes.Change;
 import fr.lteconsulting.pomexplorer.changes.ChangeSetManager;
 import fr.lteconsulting.pomexplorer.changes.GavChange;
@@ -16,96 +9,103 @@ import fr.lteconsulting.pomexplorer.depanalyze.Location;
 import fr.lteconsulting.pomexplorer.graph.relation.GAVRelation;
 import fr.lteconsulting.pomexplorer.graph.relation.Relation;
 
+import java.util.Set;
+
 @Command
-public class ReleaseCommand
+public class ReleaseCommand extends AbstractCommand
 {
-	@Help( "releases a gav, all dependencies are also released. GAVs depending on released GAVs are updated." )
-	public void gav( ILogger log, CommandOptions options, WorkingSession session, GAV gav )
-	{
-		log.html( "<b>Releasing</b> project " + gav + "<br/>" );
-		log.html( "All dependencies will be updated to a release version.<br/><br/>" );
+    public ReleaseCommand(Application application)
+    {
+        super(application);
+    }
 
-		ChangeSetManager changes = new ChangeSetManager();
+    @Help("releases a gav, all dependencies are also released. GAVs depending on released GAVs are updated.")
+    public void gav(ILogger log, CommandOptions options, WorkingSession session, GAV gav)
+    {
+        log.html("<b>Releasing</b> project " + gav + "<br/>");
+        log.html("All dependencies will be updated to a release version.<br/><br/>");
 
-		releaseGav( session, gav, changes, log );
+        ChangeSetManager changes = new ChangeSetManager();
 
-		changes.resolveChanges( session, log );
+        releaseGav(session, gav, changes, log);
 
-		Tools.printChangeList( log, changes );
+        changes.resolveChanges(session, log);
 
-		CommandTools.maybeApplyChanges( session, options, log, changes );
-	}
+        Tools.printChangeList(log, changes);
 
-	@Help( "releases all gavs, all dependencies are also released. GAVs depending on released GAVs are updated." )
-	public void allGavs( final ILogger log, CommandOptions options, WorkingSession session )
-	{
-		ChangeSetManager changes = new ChangeSetManager();
+        CommandTools.maybeApplyChanges(session, options, log, changes);
+    }
 
-		for( GAV gav : session.graph().gavs() )
-		{
-			if( gav.getVersion() == null )
-			{
-				log.html( Tools.warningMessage( "no target version (" + gav + ") !" ) );
-				continue;
-			}
+    @Help("releases all gavs, all dependencies are also released. GAVs depending on released GAVs are updated.")
+    public void allGavs(final ILogger log, CommandOptions options, WorkingSession session)
+    {
+        ChangeSetManager changes = new ChangeSetManager();
 
-			if( Tools.isReleased( gav ) )
-				continue;
+        for (GAV gav : session.graph().gavs())
+        {
+            if (gav.getVersion() == null)
+            {
+                log.html(Tools.warningMessage("no target version (" + gav + ") !"));
+                continue;
+            }
 
-			releaseGav( session, gav, changes, log );
+            if (Tools.isReleased(gav))
+                continue;
 
-		}
+            releaseGav(session, gav, changes, log);
 
-		changes.resolveChanges( session, log );
+        }
 
-		Tools.printChangeList( log, changes );
+        changes.resolveChanges(session, log);
 
-		CommandTools.maybeApplyChanges( session, options, log, changes );
-	}
+        Tools.printChangeList(log, changes);
 
-	private void releaseGav( WorkingSession session, GAV gav, ChangeSetManager changes, ILogger log )
-	{
-		String causeMessage = "release of " + gav;
+        CommandTools.maybeApplyChanges(session, options, log, changes);
+    }
 
-		if( !Tools.isReleased( gav ) )
-		{
-			GavLocation loc = new GavLocation( session.projects().forGav( gav ), PomSection.PROJECT, gav );
-			changes.addChange( new GavChange( loc, Tools.releasedGav( loc.getGav() ) ), causeMessage );
-		}
+    private void releaseGav(WorkingSession session, GAV gav, ChangeSetManager changes, ILogger log)
+    {
+        String causeMessage = "release of " + gav;
 
-		Set<GAVRelation<Relation>> relations = session.graph().relationsRec( gav );
-		for( GAVRelation<Relation> r : relations )
-		{
-			if( r.getTarget().getVersion() == null )
-			{
-				log.html( "<span style='color:orange;'>No target version (" + r.getTarget() + ") !</span><br/>" );
-				continue;
-			}
+        if (!Tools.isReleased(gav))
+        {
+            GavLocation loc = new GavLocation(session.projects().forGav(gav), PomSection.PROJECT, gav);
+            changes.addChange(new GavChange(loc, Tools.releasedGav(loc.getGav())), causeMessage);
+        }
 
-			if( Tools.isReleased( r.getTarget() ) )
-				continue;
+        Set<GAVRelation<Relation>> relations = session.graph().relationsRec(gav);
+        for (GAVRelation<Relation> r : relations)
+        {
+            if (r.getTarget().getVersion() == null)
+            {
+                log.html("<span style='color:orange;'>No target version (" + r.getTarget() + ") !</span><br/>");
+                continue;
+            }
 
-			GAV source = r.getSource();
-			GAV to = Tools.releasedGav( r.getTarget() );
+            if (Tools.isReleased(r.getTarget()))
+                continue;
 
-			Project project = session.projects().forGav( source );
-			if( project == null )
-			{
-				log.html( Tools.warningMessage( "Project not found for this GAV ! " + source ) );
-				continue;
-			}
+            GAV source = r.getSource();
+            GAV to = Tools.releasedGav(r.getTarget());
 
-			GavLocation targetLoc = new GavLocation( session.projects().forGav( r.getTarget() ), PomSection.PROJECT, r.getTarget() );
-			changes.addChange( new GavChange( targetLoc, Tools.releasedGav( targetLoc.getGav() ) ), causeMessage );
+            Project project = session.projects().forGav(source);
+            if (project == null)
+            {
+                log.html(Tools.warningMessage("Project not found for this GAV ! " + source));
+                continue;
+            }
 
-			Location dependencyLocation = Tools.findDependencyLocation( session, log, project, r );
-			if( dependencyLocation == null )
-			{
-				log.html( Tools.errorMessage( "Cannot find the location of dependency to " + r.getTarget() + " in this project " + project ) );
-				continue;
-			}
+            GavLocation targetLoc = new GavLocation(session.projects().forGav(r.getTarget()), PomSection.PROJECT, r.getTarget());
+            changes.addChange(new GavChange(targetLoc, Tools.releasedGav(targetLoc.getGav())), causeMessage);
 
-			changes.addChange( Change.create( dependencyLocation, to ), causeMessage );
-		}
-	}
+            Location dependencyLocation = Tools.findDependencyLocation(session, log, project, r);
+            if (dependencyLocation == null)
+            {
+                log.html(Tools.errorMessage("Cannot find the location of dependency to " + r.getTarget() + " in this project " + project));
+                continue;
+            }
+
+            changes.addChange(Change.create(dependencyLocation, to), causeMessage);
+        }
+    }
 }

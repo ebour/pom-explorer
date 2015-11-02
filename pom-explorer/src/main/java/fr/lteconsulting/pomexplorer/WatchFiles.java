@@ -7,31 +7,29 @@ import java.nio.file.WatchService;
 
 public class WatchFiles
 {
-	static WatchService watchService;
+    static WatchService watchService;
 
-	public static void main( String[] args )
-	{
-		try
-		{
-			watchService = FileSystems.getDefault().newWatchService();
-		}
-		catch( IOException e )
-		{
-			e.printStackTrace();
-		}
+    public static void main(String[] args)
+    {
+        try
+        {
+            watchService = FileSystems.getDefault().newWatchService();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
 
-		try
-		{
-			ProjectWatcher watcher = new ProjectWatcher( Paths.get( "c:\\tmp\\titi" ) );
-			watcher.register();
+        try
+        {
+            ProjectWatcher watcher = new ProjectWatcher(Paths.get("c:\\tmp\\titi"));
+            watcher.register();
 
-			while( watcher.waitChange() )
-			{
-			}
-		}
-		catch( Exception e )
-		{
-			e.printStackTrace();
-		}
-	}
+            while (watcher.waitChange())
+            {
+            }
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
 }

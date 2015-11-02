@@ -10,17 +10,17 @@ import static org.junit.Assert.assertEquals;
 public class AppTest
 {
     @Test
-	public void testOpenVersions()
-	{
-		checkOpenVersion("15.6.0", "16.6.0-SNAPSHOT");
-		checkOpenVersion("15060", "15061-SNAPSHOT");
-		checkOpenVersion("15060.0", "15061.0-SNAPSHOT");
-		checkOpenVersion("15060.0.5", "15061.0.5-SNAPSHOT");
-	}
+    public void testOpenVersions()
+    {
+        checkOpenVersion("15.6.0", "16.6.0-SNAPSHOT");
+        checkOpenVersion("15060", "15061-SNAPSHOT");
+        checkOpenVersion("15060.0", "15061.0-SNAPSHOT");
+        checkOpenVersion("15060.0.5", "15061.0.5-SNAPSHOT");
+    }
 
-	private void checkOpenVersion(String closed, String opened)
-	{
-		final GAV newGav = Tools.openGavVersion(new GAV("group", "artifact", closed));
-		assertEquals(opened, newGav.getVersion());
-	}
+    private void checkOpenVersion(String closed, String opened)
+    {
+        final GAV newGav = Tools.openGavVersion(new GAV("group", "artifact", closed));
+        assertEquals(opened, newGav.getVersion());
+    }
 }
