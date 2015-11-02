@@ -16,6 +16,10 @@ import fr.lteconsulting.pomexplorer.webserver.MessageFactory;
 import fr.lteconsulting.pomexplorer.webserver.WebServer;
 import fr.lteconsulting.pomexplorer.webserver.XWebServer;
 import org.reflections.Reflections;
+import org.reflections.scanners.ResourcesScanner;
+import org.reflections.scanners.TypeAnnotationsScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
 import sun.reflect.Reflection;
 
 public class AppFactory
@@ -49,7 +53,8 @@ public class AppFactory
 		{
 			commands = new Commands();
 
-			final Reflections reflections = new Reflections();
+			final Reflections reflections = new Reflections(new ConfigurationBuilder()
+																	.addUrls(ClasspathHelper.forJavaClassPath()));
 			final Set<Class<?>> commandClasses = reflections.getTypesAnnotatedWith(Command.class);
 
 			for(Class commandClass : commandClasses)
